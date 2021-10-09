@@ -21,6 +21,8 @@ parser.add_argument("-C", "--coupling", type=str, choices=["DC", "AC"], default=
                     help="DC or AC coupling")
 parser.add_argument("-g", "--gain", type=float, default=100e3,
                     help="Pre-amplifier/setup gain")
+parser.add_argument("-r", "--runs", type=int, default=10,
+                    help="Number of runs to perform and average")
 
 
 def sample(scope):
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     scope.write(f"CHAN{args.channel}:COUP {args.coupling.upper()}")
     # scope.sample_rate = 100
 
-    N = 10
+    N = args.runs
     wave = np.array([])
     vpp = np.array([])
     for x in range(0, N):
@@ -76,7 +78,7 @@ if __name__ == '__main__':
     ax0.set_title(f"0.1-Hz to 10-Hz Noise\n{scope.idn}")
 
     ax0.plot(x, wave * 1e9)
-    ax0.plot([], [], ' ', label=r"Avg: ${:.2f} nV_{{P-P}}$, Max: ${:.2f} nV_{{P-P}}$, Min:${:.2f} nV_{{P-P}}$, ".format(
+    ax0.plot([], [], ' ', label=r"Avg: ${:.2f} nV_{{P-P}}$, Max: ${:.2f} nV_{{P-P}}$, Min: ${:.2f} nV_{{P-P}}$, ".format(
         mean(vpp) * 1e9, max(vpp) * 1e9, min(vpp) * 1e9))
     ax0.plot([], [], ' ', label=r"Pre-amplifier gain = {:.1e}".format(args.gain))
     ax0.set_ylabel("Voltage [$nV$]")
